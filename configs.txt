@@ -1,0 +1,15 @@
+--n-splits 5 --seeds 0 1 --study-sizes 1000 --model-choices densenet121 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 1000 --model-choices mobilenet_v2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 1000 --model-choices wide_resnet50_2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 3000 --model-choices densenet121 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 3000 --model-choices mobilenet_v2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 3000 --model-choices wide_resnet50_2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 10000 --model-choices densenet121 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 10000 --model-choices mobilenet_v2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 10000 --model-choices wide_resnet50_2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 30000 --model-choices densenet121 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 30000 --model-choices mobilenet_v2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 30000 --model-choices wide_resnet50_2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 50000 --model-choices densenet121 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 50000 --model-choices mobilenet_v2 --epochs 3 --batch-size 64
+--n-splits 5 --seeds 0 1 --study-sizes 50000 --model-choices wide_resnet50_2 --epochs 3 --batch-size 64
