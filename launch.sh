@@ -12,6 +12,6 @@
 module purge
 module load arch/h100 pytorch-gpu
 
-params=$(awk -v  idx_param="${SLURM_ARRAY_TASK_ID}" 'NR==idx_param' configs.txt)
+params=$(awk -v  idx_param="${SLURM_ARRAY_TASK_ID}" 'NR==idx_param' configs2.txt)
 
 python pcam_deep_training.py $params
