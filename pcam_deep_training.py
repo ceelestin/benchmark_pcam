@@ -9,13 +9,13 @@ import argparse
 import gc
 import os
 import time
+import copy
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-import torchvision
 import torchvision.models as torch_models
 from datasets import load_dataset
 from PIL import Image
@@ -84,7 +84,8 @@ transform = transforms.Compose([
 
 # Load dataset from Hugging Face
 HF_NAME = "1aurent/PatchCamelyon"
-hf = load_dataset(HF_NAME)
+data_dir = "./pcam_data/"
+hf = load_dataset(data_dir)
 
 class HuggingFacePCam(Dataset):
     def __init__(self, hf_split, transform=None):
@@ -107,7 +108,7 @@ class HuggingFacePCam(Dataset):
 # Create a single, unified dataset
 full_dataset = ConcatDataset([
     HuggingFacePCam(hf["train"], transform=transform),
-    HuggingFacePCam(hf["valid"], transform=transform)
+    HuggingFacePCam(hf["validation"], transform=transform)
 ])
 
 print(f"Loaded Hugging Face PCam dataset. Total samples: {len(full_dataset)}")
@@ -211,7 +212,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, backbone_n
 
             if phase == 'valid' and epoch_acc > best_acc:
                 best_acc = epoch_acc
-                best_model_wts = model.state_dict()
+                best_model_wts = copy.deepcopy(model.state_dict())
 
     print(f"Finished training {backbone_name}. Best valid Acc: {best_acc:4f}")
     model.load_state_dict(best_model_wts)
@@ -249,7 +250,13 @@ all_results = []
 
 # Extract all labels for stratified splitting
 print("Extracting labels for stratification...")
-all_labels = [label for _, label in full_dataset]
+if Path("./pcam_data/all_labels.npz").exists():
+    labels_data = np.load("./pcam_data/all_labels.npz")
+    all_labels = labels_data['labels']
+else:
+    all_labels = np.array([label for _, label in full_dataset])
+    np.savez("pcam_data/all_labels.npz", labels=all_labels)
+print(f"Total labels extracted: {len(all_labels)}")
 
 # Split full dataset into a large training pool and a smaller pool for study sets
 benchmarking_indices, leftout_indices = train_test_split(
@@ -259,9 +266,9 @@ benchmarking_indices, leftout_indices = train_test_split(
     random_state=42
 )
 benchmarking_set = Subset(full_dataset, benchmarking_indices)
-BenchmarkingLoader = torch.utils.data.DataLoader(
-    benchmarking_set, batch_size=BatchSize,
-    shuffle=False, pin_memory=True, num_workers=4
+benchmarking_loader = torch.utils.data.DataLoader(
+    benchmarking_set, batch_size=512,
+    shuffle=False, pin_memory=True, num_workers=8
 )
 print(f"Benchmarking set size: {len(benchmarking_set)}")
 print(f"Pool for study sets size: {len(leftout_indices)}")
@@ -274,10 +281,13 @@ for seed in seeds:
                 print(f'\n{"="*40}\nStarting {backbone} with study set size {study_size}, n_splits {n_splits}, seed {seed}\n{"="*40}\n')
 
                 leftout_labels = np.array(all_labels)[leftout_indices]
-                study_indices_relative, _ = train_test_split(
-                    np.arange(len(leftout_indices)), train_size=study_size,
-                    stratify=leftout_labels, random_state=seed
-                )
+                if study_size < len(leftout_indices):
+                    study_indices_relative, _ = train_test_split(
+                        np.arange(len(leftout_indices)), train_size=study_size,
+                        stratify=leftout_labels, random_state=seed
+                    )
+                else:
+                    study_indices_relative = np.arange(len(leftout_indices))
                 study_indices_absolute = leftout_indices[study_indices_relative]
                 study_set_for_split = Subset(full_dataset, study_indices_absolute)
 
@@ -290,7 +300,7 @@ for seed in seeds:
                     valid_subset = Subset(study_set_for_split, valid_ids)
                     print(f"Train set size: {len(train_subset)}, Validation set size: {len(valid_subset)}")
 
-                    DataLoadersDict = {
+                    loaders_dict = {
                         'train': DataLoader(train_subset, batch_size=BatchSize, shuffle=True, pin_memory=True, num_workers=4),
                         'valid': DataLoader(valid_subset, batch_size=BatchSize, shuffle=False, pin_memory=True, num_workers=4)
                     }
@@ -301,13 +311,13 @@ for seed in seeds:
 
                     train_start_time = time.time()
                     trained_model = train_model(
-                        model_, DataLoadersDict, loss_function, optimizer,
+                        model_, loaders_dict, loss_function, optimizer,
                         num_epochs=epochs, backbone_name=split_backbone_name, device=device
                     )
                     train_runtime = time.time() - train_start_time
 
-                    val_metrics = evaluate_model(trained_model, DataLoadersDict['valid'], loss_function, device, f"Validation Fold {fold+1} Set")
-                    bench_metrics = evaluate_model(trained_model, BenchmarkingLoader, loss_function, device, "Benchmarking Set")
+                    val_metrics = evaluate_model(trained_model, loaders_dict['valid'], loss_function, device, f"Validation Fold {fold+1} Set")
+                    bench_metrics = evaluate_model(trained_model, benchmarking_loader, loss_function, device, "Benchmarking Set")
 
                     result_entry = {
                         "model": backbone, "study_size": study_size,
