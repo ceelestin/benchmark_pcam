@@ -55,7 +55,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
 # Training Configuration
 epochs = args.epochs
 loss_function = nn.CrossEntropyLoss()
-test_size = 0.2
+test_size = 1/6
+valid_size = 1/6
 BatchSize = args.batch_size
 study_set_sizes = args.study_sizes
 backbone_list = args.model_choices
@@ -254,8 +255,9 @@ if Path("./pcam_data/all_labels.npz").exists():
     labels_data = np.load("./pcam_data/all_labels.npz")
     all_labels = labels_data['labels']
 else:
+    Path("./pcam_data").mkdir(exist_ok=True)
     all_labels = np.array([label for _, label in full_dataset])
-    np.savez("pcam_data/all_labels.npz", labels=all_labels)
+    np.savez("./pcam_data/all_labels.npz", labels=all_labels)
 print(f"Total labels extracted: {len(all_labels)}")
 
 # Split full dataset into a large training pool and a smaller pool for study sets
@@ -291,18 +293,35 @@ for seed in seeds:
                 study_indices_absolute = leftout_indices[study_indices_relative]
                 study_set_for_split = Subset(full_dataset, study_indices_absolute)
 
-                for fold, (train_ids, valid_ids) in enumerate(ss.split(study_set_for_split)):
+                for fold, (train_val_ids, test_ids) in enumerate(ss.split(study_set_for_split)):
                     print(f'--- Seed {seed} | n_splits {n_splits} | Study Size {study_size} | Fold {fold+1}/{n_splits} ---')
                     torch.manual_seed(seed)
                     if torch.cuda.is_available(): torch.cuda.manual_seed_all(seed)
 
+                    # Split the train_val_ids further into train and validation
+                    train_val_labels = np.array(all_labels)[np.array(study_indices_absolute)[train_val_ids]]
+
+                    # Calculate the proportion of the validation set relative to the combined train+validation set
+                    validation_proportion = valid_size / (1.0 - test_size)
+
+                    train_ids_rel, valid_ids_rel = train_test_split(
+                        np.arange(len(train_val_ids)),
+                        test_size=validation_proportion,
+                        random_state=seed,
+                        stratify=train_val_labels
+                    )
+                    train_ids = train_val_ids[train_ids_rel]
+                    valid_ids = train_val_ids[valid_ids_rel]
+
                     train_subset = Subset(study_set_for_split, train_ids)
                     valid_subset = Subset(study_set_for_split, valid_ids)
-                    print(f"Train set size: {len(train_subset)}, Validation set size: {len(valid_subset)}")
+                    test_subset = Subset(study_set_for_split, test_ids)
+                    print(f"Train set size: {len(train_subset)}, Validation set size: {len(valid_subset)}, Test set size: {len(test_subset)}")
 
                     loaders_dict = {
                         'train': DataLoader(train_subset, batch_size=BatchSize, shuffle=True, pin_memory=True, num_workers=4),
-                        'valid': DataLoader(valid_subset, batch_size=BatchSize, shuffle=False, pin_memory=True, num_workers=4)
+                        'valid': DataLoader(valid_subset, batch_size=BatchSize, shuffle=False, pin_memory=True, num_workers=4),
+                        'test': DataLoader(test_subset, batch_size=BatchSize, shuffle=False, pin_memory=True, num_workers=4)
                     }
 
                     model_ = CNN_Patch_Model(backbone, nr_classes=2).to(device)
@@ -317,6 +336,7 @@ for seed in seeds:
                     train_runtime = time.time() - train_start_time
 
                     val_metrics = evaluate_model(trained_model, loaders_dict['valid'], loss_function, device, f"Validation Fold {fold+1} Set")
+                    test_metrics = evaluate_model(trained_model, loaders_dict['test'], loss_function, device, f"Test Fold {fold+1} Set")
                     bench_metrics = evaluate_model(trained_model, benchmarking_loader, loss_function, device, "Benchmarking Set")
 
                     result_entry = {
@@ -325,6 +345,8 @@ for seed in seeds:
                         "train_runtime": train_runtime,
                         "val_accuracy": val_metrics["accuracy"], "val_loss": val_metrics["loss"],
                         "val_runtime": val_metrics["runtime"],
+                        "test_accuracy": test_metrics["accuracy"], "test_loss": test_metrics["loss"],
+                        "test_runtime": test_metrics["runtime"],
                         "benchmark_accuracy": bench_metrics["accuracy"], "benchmark_loss": bench_metrics["loss"],
                         "benchmark_runtime": bench_metrics["runtime"],
                     }
