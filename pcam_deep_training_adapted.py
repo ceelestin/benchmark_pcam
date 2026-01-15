@@ -364,6 +364,9 @@ for seed in seeds:
                         target_chunk_size = len(test_subset)
                         if target_chunk_size > 0:
                             num_chunks = len(hidden_indices_absolute) // target_chunk_size
+                            if num_chunks > 200: # Limit to 200 subsets max
+                                print(f"Note: Limiting hidden test set evaluation to 200 subsets (out of {num_chunks} possible).")
+                                num_chunks = 200
                             print(f"Dividing hidden set ({len(hidden_indices_absolute)} samples) into {num_chunks} subsets of size {target_chunk_size}.")
 
                             for i in range(num_chunks):
