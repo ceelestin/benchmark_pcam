@@ -35,8 +35,12 @@ def get_available_models():
         "resnext50_32x4d", "resnext101_32x8d", "wide_resnet50_2",
         "wide_resnet101_2", "densenet121", "densenet161", "densenet169",
         "densenet201", "inception_v3", "googlenet", "mobilenet_v2",
-        "mobilenet_v3_large", "mobilenet_v3_small"
+        "mobilenet_v3_large", "mobilenet_v3_small",
+        "vit_b_16", "vit_b_32", "vit_l_16", "vit_l_32",
     ]
+
+def _is_vit(backbone):
+    return backbone.startswith("vit_")
 
 def parse_arguments():
     """Parses command-line arguments."""
@@ -129,6 +133,19 @@ print(f"Loaded Hugging Face PCam dataset. Total samples: {len(full_dataset)}")
 # ## Model Definition
 
 # %%
+class ViTFeatureExtractor(nn.Module):
+    """Wraps a torchvision ViT to return the CLS token as a [B, D] feature vector."""
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def forward(self, x):
+        x = self.model._process_input(x)
+        batch_class_token = self.model.class_token.expand(x.shape[0], -1, -1)
+        x = torch.cat([batch_class_token, x], dim=1)
+        x = self.model.encoder(x)
+        return x[:, 0]  # CLS token, shape [B, hidden_dim]
+
 def get_model_features(backbone, **kwargs):
     """Get a feature extractor model from torchvision."""
     backbone_dict = {model: getattr(torch_models, model) for model in get_available_models()}
@@ -138,7 +155,9 @@ def get_model_features(backbone, **kwargs):
     # Use the new 'weights' parameter for pretrained models
     model = backbone_dict[backbone](weights='IMAGENET1K_V1')
 
-    if "resnet" in backbone or "resnext" in backbone:
+    if _is_vit(backbone):
+        return ViTFeatureExtractor(model)
+    elif "resnet" in backbone or "resnext" in backbone:
         return nn.Sequential(*list(model.children())[:-2])
     elif "densenet" in backbone or "mobilenet" in backbone or "alexnet" in backbone:
         return model.features
@@ -155,13 +174,18 @@ class CNN_Patch_Model(nn.Module):
     def __init__(self, backbone, nr_classes=2):
         super().__init__()
         self.backbone_name = backbone
-        # InceptionV3 requires specific input size and handling of aux logits
         is_inception = backbone == "inception_v3"
         self.feat_extract = get_model_features(backbone, aux_logits=is_inception)
-        self.pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.pool = nn.Identity() if _is_vit(backbone) else nn.AdaptiveAvgPool2d((1, 1))
 
         with torch.no_grad():
-            dummy_input = torch.rand(2, 3, 299 if is_inception else 96, 299 if is_inception else 96)
+            if is_inception:
+                dummy_size = 299
+            elif _is_vit(backbone):
+                dummy_size = 224
+            else:
+                dummy_size = 96
+            dummy_input = torch.rand(2, 3, dummy_size, dummy_size)
             out_features_shape = self.feat_extract(dummy_input)
             # Handle tuple output from InceptionV3
             if isinstance(out_features_shape, tuple):
@@ -180,9 +204,12 @@ class CNN_Patch_Model(nn.Module):
         else:
             feat = self.feat_extract(imgs)
 
-        pooled_feat = self.pool(feat)
-        flat_feat = torch.flatten(pooled_feat, 1)
-        logit = self.classifier(flat_feat)
+        if _is_vit(self.backbone_name):
+            logit = self.classifier(feat)
+        else:
+            pooled_feat = self.pool(feat)
+            flat_feat = torch.flatten(pooled_feat, 1)
+            logit = self.classifier(flat_feat)
         return logit
 
 # %% [markdown]
@@ -203,9 +230,10 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, backbone_n
             dataset_size = len(dataloaders[phase].dataset)
 
             for inputs, labels in dataloaders[phase]:
-                # Resize for InceptionV3
                 if model.backbone_name == "inception_v3":
                     inputs = transforms.functional.resize(inputs, [299, 299])
+                elif _is_vit(model.backbone_name):
+                    inputs = transforms.functional.resize(inputs, [224, 224])
                 inputs, labels = inputs.to(device), labels.to(device)
                 optimizer.zero_grad()
                 with torch.set_grad_enabled(phase == "train"):
@@ -241,6 +269,8 @@ def evaluate_model(model, dataloader, criterion, device, set_name):
         for inputs, labels in dataloader:
             if model.backbone_name == "inception_v3":
                 inputs = transforms.functional.resize(inputs, [299, 299])
+            elif _is_vit(model.backbone_name):
+                inputs = transforms.functional.resize(inputs, [224, 224])
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             _, preds = torch.max(outputs, 1)
