@@ -364,7 +364,7 @@ for seed in seeds:
                     hidden_test_accuracies = []
                     hidden_test_losses = []
 
-                    if len(hidden_indices_relative) > 0:
+                    if len(hidden_indices_relative) > 0 and (not do_cross_validation or fold == 0):
                         print("Evaluating on Hidden Test Set subsets...")
                         hidden_indices_absolute = leftout_indices[hidden_indices_relative]
 
