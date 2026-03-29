@@ -20,7 +20,7 @@ import torch.nn as nn
 import torchvision.models as torch_models
 from datasets import load_dataset
 from PIL import Image
-from sklearn.model_selection import ShuffleSplit, train_test_split
+from sklearn.model_selection import ShuffleSplit, RepeatedKFold, train_test_split
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, Subset
 from torchvision import transforms
 
@@ -49,7 +49,8 @@ def parse_arguments():
     parser.add_argument("--no-cross-validation", action="store_false", dest="cross_validation",
                         help="Disable cross-validation mechanism and enable hidden test set evaluation.")
 
-    parser.add_argument("--n-splits", type=int, nargs='+', default=[1], help="List of n_splits for ShuffleSplit.")
+    parser.add_argument("--n-splits", type=int, nargs='+', default=[1], help="Total number of CV splits. For ShuffleSplit: number of random splits. For RepeatedKFold: total splits = k_folds * n_repeats, where k_folds is inferred from test_size.")
+    parser.add_argument("--cv-method", type=str, default="shuffle_split", choices=["shuffle_split", "repeated_kfold"], help="Cross-validation method to use.")
     parser.add_argument("--seeds", type=int, nargs=2, default=[0, 1], metavar=('START', 'END_EXCLUSIVE'), help="Range of seeds.")
     parser.add_argument("--study-sizes", type=int, nargs='+', default=[1000, 10000], help="List of study set sizes.")
     parser.add_argument("--model-choices", type=str, nargs='+', default=["resnet18"], choices=get_available_models(), help="Algorithms to train.")
@@ -63,12 +64,13 @@ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
 # Training Configuration
 epochs = args.epochs
 loss_function = nn.CrossEntropyLoss()
-test_size = 1/6
-valid_size = 1/6
+test_size = 1/5
+valid_size = 1/5
 BatchSize = args.batch_size
 study_set_sizes = args.study_sizes
 backbone_list = args.model_choices
 n_splits_values = args.n_splits
+cv_method = args.cv_method
 seeds = range(args.seeds[0], args.seeds[1])
 do_cross_validation = args.cross_validation
 
@@ -286,7 +288,12 @@ print(f"Pool for study sets size: {len(leftout_indices)}")
 
 for seed in seeds:
     for n_splits in n_splits_values:
-        ss = ShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=seed)
+        if cv_method == "repeated_kfold":
+            k_folds = round(1 / test_size)
+            n_repeats = n_splits // k_folds
+            ss = RepeatedKFold(n_splits=k_folds, n_repeats=n_repeats, random_state=seed)
+        else:
+            ss = ShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=seed)
         for backbone in backbone_list:
             for study_size in study_set_sizes:
                 print(f'\n{"="*40}\nStarting {backbone} with study set size {study_size}, n_splits {n_splits}, seed {seed}\n{"="*40}\n')
@@ -357,7 +364,7 @@ for seed in seeds:
                     hidden_test_accuracies = []
                     hidden_test_losses = []
 
-                    if not do_cross_validation and len(hidden_indices_relative) > 0:
+                    if len(hidden_indices_relative) > 0:
                         print("Evaluating on Hidden Test Set subsets...")
                         hidden_indices_absolute = leftout_indices[hidden_indices_relative]
 
@@ -384,6 +391,7 @@ for seed in seeds:
                         "model": backbone, "study_size": study_size,
                         "n_splits": n_splits, "seed": seed, "fold": fold + 1,
                         "cross_validation": do_cross_validation,
+                        "cv_method": cv_method,
                         "train_runtime": train_runtime,
                         "val_accuracy": val_metrics["accuracy"], "val_loss": val_metrics["loss"],
                         "val_runtime": val_metrics["runtime"],
@@ -391,8 +399,8 @@ for seed in seeds:
                         "test_runtime": test_metrics["runtime"],
                         "benchmark_accuracy": bench_metrics["accuracy"], "benchmark_loss": bench_metrics["loss"],
                         "benchmark_runtime": bench_metrics["runtime"],
-                        "hidden_test_accuracies": hidden_test_accuracies if not do_cross_validation else None,
-                        "hidden_test_losses": hidden_test_losses if not do_cross_validation else None,
+                        "hidden_test_accuracies": hidden_test_accuracies,
+                        "hidden_test_losses": hidden_test_losses,
                     }
                     all_results.append(result_entry)
                     print("-" * 25)
@@ -411,7 +419,7 @@ if all_results:
     sizes_str = "_".join(map(str, args.study_sizes))
     is_cv_str = "CV" if do_cross_validation else "NoCV"
 
-    filename = f"pcam_results_{is_cv_str}_{models_str}_nsplits_{nsplits_str}_seeds_{seeds_str}_sizes_{sizes_str}_{timestamp}.parquet"
+    filename = f"pcam_results_{is_cv_str}_{cv_method}_{models_str}_nsplits_{nsplits_str}_seeds_{seeds_str}_sizes_{sizes_str}_{timestamp}.parquet"
     parquet_path = OUTPUT_DIR / filename
 
     # Save to parquet (Pandas handles lists in columns for Parquet automatically)
