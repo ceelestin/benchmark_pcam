@@ -2,7 +2,7 @@
 #SBATCH --time=06:00:00
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
-#SBATCH --account=lsd@v100
+#SBATCH --account=sth@v100
 #SBATCH --cpus-per-gpu 8
 #SBATCH --partition=gpu_p13
 #SBATCH --job-name=ceve_pcam
