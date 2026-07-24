@@ -20,7 +20,10 @@ import torch.nn as nn
 import torchvision.models as torch_models
 from datasets import load_dataset
 from PIL import Image
-from sklearn.model_selection import ShuffleSplit, RepeatedKFold, train_test_split
+from sklearn.model_selection import (
+    ShuffleSplit, RepeatedKFold, StratifiedShuffleSplit,
+    RepeatedStratifiedKFold, train_test_split,
+)
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, Subset
 from torchvision import transforms
 
@@ -55,6 +58,7 @@ def parse_arguments():
 
     parser.add_argument("--n-splits", type=int, nargs='+', default=[1], help="Total number of CV splits. For ShuffleSplit: number of random splits. For RepeatedKFold: total splits = k_folds * n_repeats, where k_folds is inferred from test_size.")
     parser.add_argument("--cv-method", type=str, default="shuffle_split", choices=["shuffle_split", "repeated_kfold"], help="Cross-validation method to use.")
+    parser.add_argument("--stratify", action="store_true", default=False, help="Stratify the outer CV fold splits by label.")
     parser.add_argument("--seeds", type=int, nargs=2, default=[0, 1], metavar=('START', 'END_EXCLUSIVE'), help="Range of seeds.")
     parser.add_argument("--study-sizes", type=int, nargs='+', default=[1000, 10000], help="List of study set sizes.")
     parser.add_argument("--model-choices", type=str, nargs='+', default=["resnet18"], choices=get_available_models(), help="Algorithms to train.")
@@ -75,6 +79,7 @@ study_set_sizes = args.study_sizes
 backbone_list = args.model_choices
 n_splits_values = args.n_splits
 cv_method = args.cv_method
+do_stratify = args.stratify
 seeds = range(args.seeds[0], args.seeds[1])
 do_cross_validation = args.cross_validation
 
@@ -260,11 +265,13 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, backbone_n
 
 def evaluate_model(model, dataloader, criterion, device, set_name):
     model.eval()
-    running_loss = 0.0
-    running_corrects = 0
-    dataset_size = len(dataloader.dataset)
     start_time = time.time()
 
+    # Accumulate per-sample probabilities and labels so every scalar metric
+    # (accuracy, NLL, Brier) is computed from the same arrays. Memory is tiny
+    # (largest set ~50k x n_classes floats).
+    all_probs = []
+    all_labels = []
     with torch.no_grad():
         for inputs, labels in dataloader:
             if model.backbone_name == "inception_v3":
@@ -273,16 +280,33 @@ def evaluate_model(model, dataloader, criterion, device, set_name):
                 inputs = transforms.functional.resize(inputs, [224, 224])
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-            loss = criterion(outputs, labels)
-            running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(preds == labels.data)
+            probs = torch.softmax(outputs, dim=1)
+            all_probs.append(probs.cpu())
+            all_labels.append(labels.cpu())
 
     eval_time = time.time() - start_time
-    acc = running_corrects.double() / dataset_size
-    loss = running_loss / dataset_size
-    print(f"Accuracy on {set_name}: {acc:.4f}, Loss: {loss:.4f}, Time: {eval_time:.2f}s")
-    return {"accuracy": acc.item(), "loss": loss, "runtime": eval_time}
+
+    all_probs = torch.cat(all_probs).numpy()          # shape [N, n_classes]
+    all_labels = torch.cat(all_labels).numpy()        # shape [N]
+    n_classes = all_probs.shape[1]
+
+    preds = all_probs.argmax(axis=1)
+    acc = float(np.mean(preds == all_labels))
+
+    # NLL = mean cross-entropy = mean of -log p(true class).
+    eps = 1e-12
+    true_class_probs = all_probs[np.arange(len(all_labels)), all_labels]
+    nll = float(np.mean(-np.log(true_class_probs + eps)))
+
+    # Multiclass Brier score: mean over samples of sum_c (p_c - onehot_c)^2.
+    # For two classes this is the two-class Brier without the 1/2 factor.
+    onehot = np.eye(n_classes)[all_labels]
+    brier = float(np.mean(np.sum((all_probs - onehot) ** 2, axis=1)))
+
+    print(f"Accuracy on {set_name}: {acc:.4f}, NLL: {nll:.4f}, "
+          f"Brier: {brier:.4f}, Time: {eval_time:.2f}s")
+    # `loss` retains its original meaning (mean cross-entropy) for backward compat.
+    return {"accuracy": acc, "loss": nll, "nll": nll, "brier": brier, "runtime": eval_time}
 
 # %% [markdown]
 # ## Cross-validation Training Loop
@@ -321,9 +345,11 @@ for seed in seeds:
         if cv_method == "repeated_kfold":
             k_folds = round(1 / test_size)
             n_repeats = n_splits // k_folds
-            ss = RepeatedKFold(n_splits=k_folds, n_repeats=n_repeats, random_state=seed)
+            kfold_cls = RepeatedStratifiedKFold if do_stratify else RepeatedKFold
+            ss = kfold_cls(n_splits=k_folds, n_repeats=n_repeats, random_state=seed)
         else:
-            ss = ShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=seed)
+            shuffle_cls = StratifiedShuffleSplit if do_stratify else ShuffleSplit
+            ss = shuffle_cls(n_splits=n_splits, test_size=test_size, random_state=seed)
         for backbone in backbone_list:
             for study_size in study_set_sizes:
                 print(f'\n{"="*40}\nStarting {backbone} with study set size {study_size}, n_splits {n_splits}, seed {seed}\n{"="*40}\n')
@@ -344,7 +370,13 @@ for seed in seeds:
                 study_indices_absolute = leftout_indices[study_indices_relative]
                 study_set_for_split = Subset(full_dataset, study_indices_absolute)
 
-                for fold, (train_val_ids, test_ids) in enumerate(ss.split(study_set_for_split)):
+                # Labels for the study set; passed to the outer CV splitter so
+                # stratified variants can balance folds. Non-stratified splitters
+                # accept and ignore `y`, keeping the call form uniform.
+                study_labels = np.array(all_labels)[study_indices_absolute]
+
+                for fold, (train_val_ids, test_ids) in enumerate(
+                    ss.split(np.zeros(len(study_set_for_split)), study_labels)):
                     print(f'--- Seed {seed} | n_splits {n_splits} | Study Size {study_size} | Fold {fold+1}/{n_splits} ---')
                     torch.manual_seed(seed)
                     if torch.cuda.is_available(): torch.cuda.manual_seed_all(seed)
@@ -393,6 +425,8 @@ for seed in seeds:
                     # --- Hidden Test Set Evaluation (if CV is False) ---
                     hidden_test_accuracies = []
                     hidden_test_losses = []
+                    hidden_test_nlls = []
+                    hidden_test_briers = []
 
                     if len(hidden_indices_relative) > 0 and (not do_cross_validation or fold == 0):
                         print("Evaluating on Hidden Test Set subsets...")
@@ -415,6 +449,8 @@ for seed in seeds:
                                 metrics = evaluate_model(trained_model, chunk_loader, loss_function, device, f"Hidden Test Subset {i+1}")
                                 hidden_test_accuracies.append(metrics["accuracy"])
                                 hidden_test_losses.append(metrics["loss"])
+                                hidden_test_nlls.append(metrics["nll"])
+                                hidden_test_briers.append(metrics["brier"])
 
 
                     result_entry = {
@@ -422,15 +458,21 @@ for seed in seeds:
                         "n_splits": n_splits, "seed": seed, "fold": fold + 1,
                         "cross_validation": do_cross_validation,
                         "cv_method": cv_method,
+                        "stratified": do_stratify,
                         "train_runtime": train_runtime,
                         "val_accuracy": val_metrics["accuracy"], "val_loss": val_metrics["loss"],
+                        "val_nll": val_metrics["nll"], "val_brier": val_metrics["brier"],
                         "val_runtime": val_metrics["runtime"],
                         "test_accuracy": test_metrics["accuracy"], "test_loss": test_metrics["loss"],
+                        "test_nll": test_metrics["nll"], "test_brier": test_metrics["brier"],
                         "test_runtime": test_metrics["runtime"],
                         "benchmark_accuracy": bench_metrics["accuracy"], "benchmark_loss": bench_metrics["loss"],
+                        "benchmark_nll": bench_metrics["nll"], "benchmark_brier": bench_metrics["brier"],
                         "benchmark_runtime": bench_metrics["runtime"],
                         "hidden_test_accuracies": hidden_test_accuracies,
                         "hidden_test_losses": hidden_test_losses,
+                        "hidden_test_nlls": hidden_test_nlls,
+                        "hidden_test_briers": hidden_test_briers,
                     }
                     all_results.append(result_entry)
                     print("-" * 25)
@@ -448,8 +490,9 @@ if all_results:
     seeds_str = f"{args.seeds[0]}-{args.seeds[1]-1}"
     sizes_str = "_".join(map(str, args.study_sizes))
     is_cv_str = "CV" if do_cross_validation else "NoCV"
+    strat_str = "strat" if do_stratify else "unstrat"
 
-    filename = f"pcam_results_{is_cv_str}_{cv_method}_{models_str}_nsplits_{nsplits_str}_seeds_{seeds_str}_sizes_{sizes_str}_{timestamp}.parquet"
+    filename = f"pcam_results_{is_cv_str}_{cv_method}_{strat_str}_{models_str}_nsplits_{nsplits_str}_seeds_{seeds_str}_sizes_{sizes_str}_{timestamp}.parquet"
     parquet_path = OUTPUT_DIR / filename
 
     # Save to parquet (Pandas handles lists in columns for Parquet automatically)
