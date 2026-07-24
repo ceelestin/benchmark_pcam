@@ -20,6 +20,13 @@ module load pytorch-gpu
 export HF_HOME=$WORK/hf_cache
 export HF_DATASETS_CACHE=$HF_HOME/datasets
 
+# torchvision downloads ImageNet weights from download.pytorch.org, but Jean-Zay
+# compute nodes have no internet (-> "URLError: [Errno 101] Network is unreachable"),
+# and the default cache is ~/.cache/torch on $HOME. Point it at a persistent $WORK
+# cache that must be pre-populated from a login/prepost node (which has proxy
+# internet) before submitting the array -- see the pre-download command in comments.
+export TORCH_HOME=$WORK/torch_cache
+
 params=$(awk -v  idx_param="${SLURM_ARRAY_TASK_ID}" 'NR==idx_param' configs/stratification_and_newmetrics.txt)
 
 python pcam_deep_training_adapted.py $params
