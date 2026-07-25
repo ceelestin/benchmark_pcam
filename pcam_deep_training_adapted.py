@@ -438,11 +438,38 @@ for seed in seeds:
                             if num_chunks > 200: # Limit to 200 subsets max
                                 print(f"Note: Limiting hidden test set evaluation to 200 subsets (out of {num_chunks} possible).")
                                 num_chunks = 200
-                            print(f"Dividing hidden set ({len(hidden_indices_absolute)} samples) into {num_chunks} subsets of size {target_chunk_size}.")
 
-                            for i in range(num_chunks):
-                                # Slice the fixed hidden indices
-                                chunk_indices = hidden_indices_absolute[i*target_chunk_size : (i+1)*target_chunk_size]
+                            # Chunk the hidden set the SAME way the outer CV splits the
+                            # study set: stratified (class-balanced) chunks when
+                            # do_stratify, plain contiguous slices otherwise. This keeps
+                            # the no-CV growth-curve baseline drawn like the CV test folds;
+                            # without it, unbalanced chunks make the growth curve noisy /
+                            # non-monotonic and inflate the sample gain for NLL/Brier.
+                            if do_stratify:
+                                hidden_labels = np.array(all_labels)[hidden_indices_absolute]
+                                rng = np.random.RandomState(seed)
+                                classes, counts = np.unique(hidden_labels, return_counts=True)
+                                pools = {c: rng.permutation(np.where(hidden_labels == c)[0]) for c in classes}
+                                quota = np.floor(counts / counts.sum() * target_chunk_size).astype(int)
+                                while quota.sum() < target_chunk_size:  # top up to exact size
+                                    quota[np.argmax(counts / counts.sum() * target_chunk_size - quota)] += 1
+                                num_chunks = min(num_chunks,
+                                                 min(len(pools[c]) // q for c, q in zip(classes, quota) if q > 0))
+                                cursors = {c: 0 for c in classes}
+                                chunk_list = []
+                                for _ in range(num_chunks):
+                                    sel = []
+                                    for c, q in zip(classes, quota):
+                                        sel.extend(pools[c][cursors[c]:cursors[c] + q]); cursors[c] += q
+                                    chunk_list.append(hidden_indices_absolute[np.array(sel, dtype=int)])
+                            else:
+                                chunk_list = [hidden_indices_absolute[i*target_chunk_size:(i+1)*target_chunk_size]
+                                              for i in range(num_chunks)]
+
+                            print(f"Dividing hidden set ({len(hidden_indices_absolute)} samples) into {num_chunks} "
+                                  f"{'stratified ' if do_stratify else ''}subsets of size {target_chunk_size}.")
+
+                            for i, chunk_indices in enumerate(chunk_list):
                                 chunk_subset = Subset(full_dataset, chunk_indices)
                                 chunk_loader = DataLoader(chunk_subset, batch_size=BatchSize, shuffle=False, pin_memory=True, num_workers=4)
 
