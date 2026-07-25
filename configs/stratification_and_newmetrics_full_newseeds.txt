@@ -1,0 +1,400 @@
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64 --stratify
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices densenet121 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices wide_resnet101_2 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 50 51 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 51 52 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 52 53 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 53 54 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 54 55 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 55 56 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 56 57 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 57 58 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 58 59 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 59 60 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 60 61 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 61 62 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 62 63 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 63 64 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 64 65 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 65 66 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 66 67 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 67 68 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 68 69 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 69 70 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 70 71 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 71 72 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 72 73 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 73 74 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 74 75 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 75 76 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 76 77 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 77 78 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 78 79 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 79 80 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 80 81 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 81 82 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 82 83 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 83 84 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 84 85 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 85 86 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 86 87 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 87 88 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 88 89 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 89 90 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 90 91 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 91 92 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 92 93 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 93 94 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 94 95 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 95 96 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 96 97 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 97 98 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 98 99 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
+--n-splits 20 --cv-method shuffle_split --seeds 99 100 --study-sizes 500 --model-choices vit_b_16 --epochs 30 --batch-size 64
