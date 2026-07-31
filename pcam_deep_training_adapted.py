@@ -263,7 +263,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, backbone_n
     model.load_state_dict(best_model_wts)
     return model
 
-def evaluate_model(model, dataloader, criterion, device, set_name):
+def evaluate_model(model, dataloader, criterion, device, set_name,
+                   return_per_sample=False):
     model.eval()
     start_time = time.time()
 
@@ -306,7 +307,57 @@ def evaluate_model(model, dataloader, criterion, device, set_name):
     print(f"Accuracy on {set_name}: {acc:.4f}, NLL: {nll:.4f}, "
           f"Brier: {brier:.4f}, Time: {eval_time:.2f}s")
     # `loss` retains its original meaning (mean cross-entropy) for backward compat.
-    return {"accuracy": acc, "loss": nll, "nll": nll, "brier": brier, "runtime": eval_time}
+    result = {"accuracy": acc, "loss": nll, "nll": nll, "brier": brier, "runtime": eval_time}
+    if return_per_sample:
+        # Per-sample loss for each metric, aligned with the dataloader order (which,
+        # for the test fold, is the order of `test_ids`). Brier = per-sample squared
+        # error of the probability vector — the direct analog of the regression
+        # objective's squared error; nll = per-sample cross-entropy; err01 = 0/1
+        # misclassification (the per-sample loss behind accuracy).
+        per_sample = {
+            "brier": np.sum((all_probs - onehot) ** 2, axis=1),
+            "nll": -np.log(true_class_probs + eps),
+            "err01": (preds != all_labels).astype(float),
+        }
+        return result, per_sample
+    return result
+
+
+def _pairwise_oof_icc(loss_by_fold, ids_by_fold):
+    """Study-only OOF-intersection ICC of a per-sample loss across CV folds.
+
+    Mirrors the regression objective's ``_oof_intersection_icc``: for every pair
+    of folds, restrict to the study points both folds held out (the intersection
+    of their test-index sets), take cov / mean-var of the per-sample loss on those
+    shared points, and average over pairs. rho = mean(cov) / mean(var). Pairs that
+    share fewer than 2 points are skipped (e.g. disjoint KFold folds within a
+    repeat). Returns (rho, n_pairs, mean_intersection_size).
+    """
+    id_to_loss = [dict(zip(np.asarray(ids).tolist(), np.asarray(loss)))
+                  for ids, loss in zip(ids_by_fold, loss_by_fold)]
+    covs, vars_, sizes = [], [], []
+    n_folds = len(ids_by_fold)
+    for k in range(n_folds):
+        for ell in range(k + 1, n_folds):
+            shared = np.intersect1d(np.asarray(ids_by_fold[k]),
+                                    np.asarray(ids_by_fold[ell]), assume_unique=True)
+            if shared.size < 2:
+                continue
+            qk = np.array([id_to_loss[k][int(i)] for i in shared])
+            ql = np.array([id_to_loss[ell][int(i)] for i in shared])
+            pair_cov = np.cov(qk, ql)
+            cov = float(pair_cov[0, 1])
+            var = float(0.5 * (pair_cov[0, 0] + pair_cov[1, 1]))
+            if not (np.isfinite(cov) and np.isfinite(var)):
+                continue
+            covs.append(cov)
+            vars_.append(var)
+            sizes.append(int(shared.size))
+    if not covs:
+        return np.nan, 0, np.nan
+    var_mean = float(np.mean(vars_))
+    rho = float(np.mean(covs) / var_mean) if var_mean > 0 else 0.0
+    return rho, int(len(covs)), float(np.mean(sizes))
 
 # %% [markdown]
 # ## Cross-validation Training Loop
@@ -375,6 +426,13 @@ for seed in seeds:
                 # accept and ignore `y`, keeping the call form uniform.
                 study_labels = np.array(all_labels)[study_indices_absolute]
 
+                # Accumulate this (seed, n_splits, model, study_size) group's result
+                # rows and per-fold per-sample test losses, so the study-only
+                # OOF-intersection redundancy can be computed across folds after the
+                # fold loop and written back onto every fold row of the group.
+                group_entries = []
+                fold_test_ids, fold_brier, fold_nll, fold_err01 = [], [], [], []
+
                 for fold, (train_val_ids, test_ids) in enumerate(
                     ss.split(np.zeros(len(study_set_for_split)), study_labels)):
                     print(f'--- Seed {seed} | n_splits {n_splits} | Study Size {study_size} | Fold {fold+1}/{n_splits} ---')
@@ -419,8 +477,17 @@ for seed in seeds:
                     train_runtime = time.time() - train_start_time
 
                     val_metrics = evaluate_model(trained_model, loaders_dict['valid'], loss_function, device, f"Validation Fold {fold+1} Set")
-                    test_metrics = evaluate_model(trained_model, loaders_dict['test'], loss_function, device, f"Test Fold {fold+1} Set")
+                    test_metrics, test_per_sample = evaluate_model(
+                        trained_model, loaders_dict['test'], loss_function, device,
+                        f"Test Fold {fold+1} Set", return_per_sample=True)
                     bench_metrics = evaluate_model(trained_model, benchmarking_loader, loss_function, device, "Benchmarking Set")
+
+                    # Per-fold per-sample test losses, keyed by study-relative test
+                    # index, for the across-fold redundancy computed after the loop.
+                    fold_test_ids.append(np.asarray(test_ids))
+                    fold_brier.append(test_per_sample["brier"])
+                    fold_nll.append(test_per_sample["nll"])
+                    fold_err01.append(test_per_sample["err01"])
 
                     # --- Hidden Test Set Evaluation (if CV is False) ---
                     hidden_test_accuracies = []
@@ -500,13 +567,41 @@ for seed in seeds:
                         "hidden_test_losses": hidden_test_losses,
                         "hidden_test_nlls": hidden_test_nlls,
                         "hidden_test_briers": hidden_test_briers,
+                        # Study-only OOF-intersection redundancy (rho-hat) per metric;
+                        # filled in after the fold loop (NaN for single-fold groups).
+                        # Brier fills the canonical `study_squared_error_rho_*` name to
+                        # match the regression objective (Brier = squared error).
+                        "study_squared_error_rho_all_oof_intersection": np.nan,
+                        "study_nll_rho_all_oof_intersection": np.nan,
+                        "study_error01_rho_all_oof_intersection": np.nan,
+                        "oof_intersection_pairs": np.nan,
+                        "oof_intersection_mean_size": np.nan,
                     }
                     all_results.append(result_entry)
+                    group_entries.append(result_entry)
                     print("-" * 25)
 
                     del model_, trained_model, optimizer
                     gc.collect()
                     if torch.cuda.is_available(): torch.cuda.empty_cache()
+
+                # ── Study-only OOF-intersection redundancy across this group's folds ──
+                # One rho-hat per metric, computed from the per-sample test losses on
+                # the study points that pairs of folds both held out. Written back onto
+                # every fold row of the group (NaN when there is only one fold, or when
+                # no fold pair shares >= 2 test points, e.g. a single KFold repeat).
+                rho_brier, n_pairs, mean_isize = _pairwise_oof_icc(fold_brier, fold_test_ids)
+                rho_nll, _, _ = _pairwise_oof_icc(fold_nll, fold_test_ids)
+                rho_err01, _, _ = _pairwise_oof_icc(fold_err01, fold_test_ids)
+                print(f"Redundancy rho-hat (OOF-intersection) | brier={rho_brier} "
+                      f"nll={rho_nll} err01={rho_err01} (pairs={n_pairs}, "
+                      f"mean intersection size={mean_isize})")
+                for entry in group_entries:
+                    entry["study_squared_error_rho_all_oof_intersection"] = rho_brier
+                    entry["study_nll_rho_all_oof_intersection"] = rho_nll
+                    entry["study_error01_rho_all_oof_intersection"] = rho_err01
+                    entry["oof_intersection_pairs"] = n_pairs
+                    entry["oof_intersection_mean_size"] = mean_isize
 
 print("\n--- All Benchmarking Runs Finished ---")
 if all_results:

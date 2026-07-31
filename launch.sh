@@ -27,6 +27,6 @@ export HF_DATASETS_CACHE=$HF_HOME/datasets
 # internet) before submitting the array -- see the pre-download command in comments.
 export TORCH_HOME=$WORK/torch_cache
 
-params=$(awk -v  idx_param="${SLURM_ARRAY_TASK_ID}" 'NR==idx_param' configs/stratificationONLY_and_newmetrics_full.txt)
+params=$(awk -v  idx_param="${SLURM_ARRAY_TASK_ID}" 'NR==idx_param' configs/redundancy_smalldata.txt)
 
 python pcam_deep_training_adapted.py $params
