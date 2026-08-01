@@ -60,7 +60,7 @@ def parse_arguments():
     parser.add_argument("--cv-method", type=str, default="shuffle_split", choices=["shuffle_split", "repeated_kfold"], help="Cross-validation method to use.")
     parser.add_argument("--stratify", action="store_true", default=False, help="Stratify the outer CV fold splits by label.")
     parser.add_argument("--seeds", type=int, nargs=2, default=[0, 1], metavar=('START', 'END_EXCLUSIVE'), help="Range of seeds.")
-    parser.add_argument("--study-sizes", type=int, nargs='+', default=[1000, 10000], help="List of study set sizes.")
+    parser.add_argument("--train-sizes", type=int, nargs='+', default=[1000, 10000], help="List of train (train+validation) sizes. Each value is the per-fold train+val size the model uses; the study pool is sized up by 1/(1-test_size) to also hold the rotating CV test fold.")
     parser.add_argument("--model-choices", type=str, nargs='+', default=["resnet18"], choices=get_available_models(), help="Algorithms to train.")
     parser.add_argument("--epochs", type=int, default=2, help="Number of training epochs.")
     parser.add_argument("--batch-size", type=int, default=64, help="Training and evaluation batch size.")
@@ -75,7 +75,7 @@ loss_function = nn.CrossEntropyLoss()
 test_size = 1/5
 valid_size = 1/5
 BatchSize = args.batch_size
-study_set_sizes = args.study_sizes
+study_set_sizes = args.train_sizes
 backbone_list = args.model_choices
 n_splits_values = args.n_splits
 cv_method = args.cv_method
@@ -402,8 +402,14 @@ for seed in seeds:
             shuffle_cls = StratifiedShuffleSplit if do_stratify else ShuffleSplit
             ss = shuffle_cls(n_splits=n_splits, test_size=test_size, random_state=seed)
         for backbone in backbone_list:
-            for study_size in study_set_sizes:
-                print(f'\n{"="*40}\nStarting {backbone} with study set size {study_size}, n_splits {n_splits}, seed {seed}\n{"="*40}\n')
+            for train_size in study_set_sizes:
+                # The CLI value is the train(+validation) size the model uses.
+                # The study set additionally holds the rotating CV test fold, so
+                # the actual study pool is larger by 1/(1-test_size): with
+                # test_size=1/5 each fold leaves train+val = 4/5 * pool = train_size.
+                study_size = round(train_size / (1.0 - test_size))
+                print(f'\n{"="*40}\nStarting {backbone} with train size {train_size} '
+                      f'(study pool {study_size}), n_splits {n_splits}, seed {seed}\n{"="*40}\n')
 
                 leftout_labels = np.array(all_labels)[leftout_indices]
 
@@ -435,7 +441,7 @@ for seed in seeds:
 
                 for fold, (train_val_ids, test_ids) in enumerate(
                     ss.split(np.zeros(len(study_set_for_split)), study_labels)):
-                    print(f'--- Seed {seed} | n_splits {n_splits} | Study Size {study_size} | Fold {fold+1}/{n_splits} ---')
+                    print(f'--- Seed {seed} | n_splits {n_splits} | Train Size {train_size} (study pool {study_size}) | Fold {fold+1}/{n_splits} ---')
                     torch.manual_seed(seed)
                     if torch.cuda.is_available(): torch.cuda.manual_seed_all(seed)
 
@@ -548,7 +554,11 @@ for seed in seeds:
 
 
                     result_entry = {
-                        "model": backbone, "study_size": study_size,
+                        # `study_size` records the CLI train(+val) size so every
+                        # downstream size label is the chosen train size; the
+                        # larger actual study pool is kept in `study_pool_size`.
+                        "model": backbone, "study_size": train_size,
+                        "study_pool_size": study_size,
                         "n_splits": n_splits, "seed": seed, "fold": fold + 1,
                         "cross_validation": do_cross_validation,
                         "cv_method": cv_method,
@@ -610,7 +620,7 @@ if all_results:
     models_str = "_".join(args.model_choices)
     nsplits_str = "_".join(map(str, args.n_splits))
     seeds_str = f"{args.seeds[0]}-{args.seeds[1]-1}"
-    sizes_str = "_".join(map(str, args.study_sizes))
+    sizes_str = "_".join(map(str, args.train_sizes))
     is_cv_str = "CV" if do_cross_validation else "NoCV"
     strat_str = "strat" if do_stratify else "unstrat"
 
