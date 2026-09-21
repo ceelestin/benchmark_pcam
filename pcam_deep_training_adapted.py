@@ -586,6 +586,14 @@ for seed in seeds:
                         "study_error01_rho_all_oof_intersection": np.nan,
                         "oof_intersection_pairs": np.nan,
                         "oof_intersection_mean_size": np.nan,
+                        # Cumulative variants (additive): the row of fold k holds the
+                        # redundancy computable after the first k folds, i.e. the
+                        # early-stopping estimate seen at k splits. NaN for fold 1.
+                        "study_squared_error_rho_cum_oof_intersection": np.nan,
+                        "study_nll_rho_cum_oof_intersection": np.nan,
+                        "study_error01_rho_cum_oof_intersection": np.nan,
+                        "oof_intersection_pairs_cum": np.nan,
+                        "oof_intersection_mean_size_cum": np.nan,
                     }
                     all_results.append(result_entry)
                     group_entries.append(result_entry)
@@ -612,6 +620,24 @@ for seed in seeds:
                     entry["study_error01_rho_all_oof_intersection"] = rho_err01
                     entry["oof_intersection_pairs"] = n_pairs
                     entry["oof_intersection_mean_size"] = mean_isize
+
+                # ── Cumulative redundancy after the first k folds (additive columns) ──
+                # Same estimator restricted to folds 1..k, written on the row of fold
+                # k: what a practitioner could compute after k splits. The final
+                # broadcast columns above are unchanged (row of fold K equals them).
+                for k_idx, entry in enumerate(group_entries):
+                    k = k_idx + 1
+                    if k < 2:
+                        continue
+                    ids_k = fold_test_ids[:k]
+                    rb, npk, msk = _pairwise_oof_icc(fold_brier[:k], ids_k)
+                    rn, _, _ = _pairwise_oof_icc(fold_nll[:k], ids_k)
+                    re01, _, _ = _pairwise_oof_icc(fold_err01[:k], ids_k)
+                    entry["study_squared_error_rho_cum_oof_intersection"] = rb
+                    entry["study_nll_rho_cum_oof_intersection"] = rn
+                    entry["study_error01_rho_cum_oof_intersection"] = re01
+                    entry["oof_intersection_pairs_cum"] = npk
+                    entry["oof_intersection_mean_size_cum"] = msk
 
 print("\n--- All Benchmarking Runs Finished ---")
 if all_results:
