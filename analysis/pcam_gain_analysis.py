@@ -38,8 +38,16 @@ LOSS = {  # loss -> (test col, bench col, hidden list col, sign (+1 higher-bette
     "nll": ("test_nll", "benchmark_nll", "hidden_test_nlls", -1, "study_nll_rho_cum_oof_intersection"),
     "brier": ("test_brier", "benchmark_brier", "hidden_test_briers", -1, "study_squared_error_rho_cum_oof_intersection"),
 }
-RHO_COLS = {"rho_err01": "study_error01_rho_cum_oof_intersection", "rho_nll": "study_nll_rho_cum_oof_intersection",
-            "rho_sq": "study_squared_error_rho_cum_oof_intersection"}
+# DEVIATION FROM THE PRE-REGISTRATION (2026-09-23): the 391 job-9433 parquets predate the
+# cumulative columns and only carry the K=20 broadcast value `study_<loss>_rho_all_oof_intersection`
+# (the 9 resubmit parquets have both). The fold-k read of the rule is therefore only possible
+# at k = 20 on this set; the threshold (rho > 0.2631 <=> stop) is unchanged. `--rho cum` uses
+# the cumulative columns where they exist (9/400 cells) for reference.
+RHO_COLS_ALL = {"rho_err01": "study_error01_rho_all_oof_intersection", "rho_nll": "study_nll_rho_all_oof_intersection",
+                "rho_sq": "study_squared_error_rho_all_oof_intersection"}
+RHO_COLS_CUM = {"rho_err01": "study_error01_rho_cum_oof_intersection", "rho_nll": "study_nll_rho_cum_oof_intersection",
+                "rho_sq": "study_squared_error_rho_cum_oof_intersection"}
+RHO_COLS = RHO_COLS_ALL
 K_GRID = [2, 3, 5, 10, 20]
 
 
@@ -103,7 +111,9 @@ def analyse(df, loss):
         for k in (3, 5, 10, 20):
             sub = g[g["fold"] == k]
             for name, col in RHO_COLS.items():
-                rec[f"{name}_{k}"] = float(sub[col].astype(float).median())
+                vals = sub[col].astype(float)
+                rec[f"{name}_{k}"] = float(vals.median()) if vals.notna().any() else np.nan
+                rec[f"{name}_{k}_nseeds"] = int(vals.notna().sum())
         cands.append(rec)
     return pd.DataFrame(rows), pd.DataFrame(cands)
 
@@ -112,7 +122,10 @@ def rule_report(cand, loss):
     rho = {"accuracy": "rho_err01", "nll": "rho_nll", "brier": "rho_sq"}[loss]
     f_star = next(f for f in np.linspace(0, 1, 100001) if G_closed(f, 20) >= 10)
     print(f"\n=== pre-registered rule, loss={loss}, candidate {rho}: continue iff f_hat >= {f_star:.4f} (rho_cum(3) <= {1-f_star:.4f}) ===")
-    for k in (3, 5):
+    for k in (3, 5, 20):
+        if cand[f"{rho}_{k}"].isna().any():
+            print(f"  k={k}: candidate missing for {int(cand[f'{rho}_{k}'].isna().sum())}/{len(cand)} configurations (seeds with the column: {cand[f'{rho}_{k}_nseeds'].min()}-{cand[f'{rho}_{k}_nseeds'].max()}) -> skipped")
+            continue
         fh = 1 - cand[f"{rho}_{k}"]
         stop = fh < f_star
         large = cand["G_paper_20"] >= 10
@@ -122,11 +135,11 @@ def rule_report(cand, loss):
               f"| bound P(pred G_20 >= obs)={(pred >= cand['G_paper_20']).mean():.2f}, median log(pred/obs)={np.log(pred / cand['G_paper_20']).median():+.2f}")
     from scipy.stats import spearmanr
     for name in RHO_COLS:
-        ok = cand[[f"{name}_3", "G_paper_20"]].dropna()
-        print(f"  Spearman({name}_3, G_paper_20) = {spearmanr(ok.iloc[:, 0], ok.iloc[:, 1]).statistic:+.2f}", end="")
+        ok = cand[[f"{name}_20", "G_paper_20"]].dropna()
+        print(f"  Spearman({name}_20, G_paper_20) = {spearmanr(ok.iloc[:, 0], ok.iloc[:, 1]).statistic:+.2f} (n={len(ok)})", end="")
     print()
     pd.set_option("display.width", 250)
-    print(cand.pivot_table(index="model", columns="train_size", values=["G_paper_20", f"{rho}_3"], aggfunc="median").round(3).to_string())
+    print(cand.pivot_table(index="model", columns="train_size", values=["G_paper_20", "G_paper_5", f"{rho}_20"], aggfunc="median").round(3).to_string())
 
 
 def main():
@@ -134,7 +147,10 @@ def main():
     ap.add_argument("--glob", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--loss", default="accuracy", choices=list(LOSS))
+    ap.add_argument("--rho", default="all", choices=["all", "cum"], help="all: K=20 broadcast column (available on all 400 cells); cum: cumulative column (9 cells)")
     args = ap.parse_args()
+    global RHO_COLS
+    RHO_COLS = RHO_COLS_ALL if args.rho == "all" else RHO_COLS_CUM
     os.makedirs(args.out_dir, exist_ok=True)
     df = load(args.glob)
     print(f"rows={len(df):,} models={df.model.nunique()} sizes={sorted(df.study_size.unique())} seeds={df.seed.nunique()} K={df.n_splits.iloc[0]}")
