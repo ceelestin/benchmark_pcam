@@ -1,0 +1,1 @@
+--n-splits 4 --cv-method shuffle_split --seeds 0 1 --train-sizes 100 --model-choices mobilenet_v2 --epochs 1 --batch-size 64

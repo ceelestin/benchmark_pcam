@@ -359,6 +359,42 @@ def _pairwise_oof_icc(loss_by_fold, ids_by_fold):
     rho = float(np.mean(covs) / var_mean) if var_mean > 0 else 0.0
     return rho, int(len(covs)), float(np.mean(sizes))
 
+
+def _oof_anova(loss_by_fold, ids_by_fold):
+    """Per-sample OOF variance decomposition of a per-sample loss across folds.
+
+    Mirrors the regression objective's ``_oof_anova_summary``: every study point
+    is observed out-of-fold on the folds where it is in the test part (an
+    unbalanced one-way layout). Over the points seen at least twice:
+    fold_var = mean per-sample unbiased variance across folds (training-driven
+    component), sample_var = variance across samples of the per-sample mean,
+    minus the fold noise it carries (sample-driven component: label noise +
+    shared bias), icc = sample_var / (sample_var + fold_var).
+    Returns (sample_var, fold_var, icc, n_seen_twice, mean_oof_count).
+    """
+    sums, sumsq, count = {}, {}, {}
+    for ids, loss in zip(ids_by_fold, loss_by_fold):
+        for i, v in zip(np.asarray(ids).tolist(), np.asarray(loss, dtype=float)):
+            sums[i] = sums.get(i, 0.0) + v
+            sumsq[i] = sumsq.get(i, 0.0) + v * v
+            count[i] = count.get(i, 0) + 1
+    if not count:
+        return np.nan, np.nan, np.nan, 0, np.nan
+    c_all = np.array(list(count.values()), dtype=float)
+    keys = [k for k, n in count.items() if n >= 2]
+    if len(keys) < 2:
+        return np.nan, np.nan, np.nan, len(keys), float(np.mean(c_all))
+    cc = np.array([count[k] for k in keys], dtype=float)
+    s = np.array([sums[k] for k in keys])
+    ss = np.array([sumsq[k] for k in keys])
+    means = s / cc
+    within = np.clip((ss - cc * means ** 2) / (cc - 1), 0.0, None)
+    fold_var = float(np.mean(within))
+    sample_var = max(float(np.var(means, ddof=1) - np.mean(within / cc)), 0.0)
+    total = sample_var + fold_var
+    icc = float(sample_var / total) if total > 0 else np.nan
+    return sample_var, fold_var, icc, int(len(keys)), float(np.mean(c_all))
+
 # %% [markdown]
 # ## Cross-validation Training Loop
 
@@ -594,6 +630,16 @@ for seed in seeds:
                         "study_error01_rho_cum_oof_intersection": np.nan,
                         "oof_intersection_pairs_cum": np.nan,
                         "oof_intersection_mean_size_cum": np.nan,
+                        # Per-sample OOF ANOVA (sample-driven vs fold-driven variance of
+                        # the per-sample loss; icc = sample/(sample+fold)), cumulative
+                        # over folds 1..k on the row of fold k (NaN for fold 1), and the
+                        # K-fold value broadcast (`_all`).
+                        **{f"study_oof_anova_{m}_{q}_{v}": np.nan
+                           for m in ("squared_error", "nll", "error01")
+                           for q in ("sample_var", "fold_var", "icc")
+                           for v in ("cum", "all")},
+                        "study_oof_anova_n_samples_seen_twice_cum": np.nan,
+                        "study_oof_anova_mean_oof_count_cum": np.nan,
                     }
                     all_results.append(result_entry)
                     group_entries.append(result_entry)
@@ -614,12 +660,18 @@ for seed in seeds:
                 print(f"Redundancy rho-hat (OOF-intersection) | brier={rho_brier} "
                       f"nll={rho_nll} err01={rho_err01} (pairs={n_pairs}, "
                       f"mean intersection size={mean_isize})")
+                anova_all = {m: _oof_anova(fl, fold_test_ids) for m, fl in
+                             (("squared_error", fold_brier), ("nll", fold_nll), ("error01", fold_err01))}
                 for entry in group_entries:
                     entry["study_squared_error_rho_all_oof_intersection"] = rho_brier
                     entry["study_nll_rho_all_oof_intersection"] = rho_nll
                     entry["study_error01_rho_all_oof_intersection"] = rho_err01
                     entry["oof_intersection_pairs"] = n_pairs
                     entry["oof_intersection_mean_size"] = mean_isize
+                    for m, (sv, fv, icc, _, _) in anova_all.items():
+                        entry[f"study_oof_anova_{m}_sample_var_all"] = sv
+                        entry[f"study_oof_anova_{m}_fold_var_all"] = fv
+                        entry[f"study_oof_anova_{m}_icc_all"] = icc
 
                 # ── Cumulative redundancy after the first k folds (additive columns) ──
                 # Same estimator restricted to folds 1..k, written on the row of fold
@@ -638,6 +690,13 @@ for seed in seeds:
                     entry["study_error01_rho_cum_oof_intersection"] = re01
                     entry["oof_intersection_pairs_cum"] = npk
                     entry["oof_intersection_mean_size_cum"] = msk
+                    for m, fl in (("squared_error", fold_brier), ("nll", fold_nll), ("error01", fold_err01)):
+                        sv, fv, icc, n2, mc = _oof_anova(fl[:k], ids_k)
+                        entry[f"study_oof_anova_{m}_sample_var_cum"] = sv
+                        entry[f"study_oof_anova_{m}_fold_var_cum"] = fv
+                        entry[f"study_oof_anova_{m}_icc_cum"] = icc
+                        entry["study_oof_anova_n_samples_seen_twice_cum"] = n2
+                        entry["study_oof_anova_mean_oof_count_cum"] = mc
 
 print("\n--- All Benchmarking Runs Finished ---")
 if all_results:
