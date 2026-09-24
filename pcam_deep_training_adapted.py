@@ -64,6 +64,11 @@ def parse_arguments():
     parser.add_argument("--model-choices", type=str, nargs='+', default=["resnet18"], choices=get_available_models(), help="Algorithms to train.")
     parser.add_argument("--epochs", type=int, default=2, help="Number of training epochs.")
     parser.add_argument("--batch-size", type=int, default=64, help="Training and evaluation batch size.")
+    parser.add_argument("--bench-max-samples", type=int, default=0,
+                        help="If > 0, evaluate on a fixed stratified random subset of at most this many "
+                             "benchmarking-set samples (random_state 43) instead of the full ~240k set. The "
+                             "oracle score keeps a negligible sampling error (Var ~ 0.25/N) while ViT-B/16 "
+                             "evaluation time per fold drops proportionally. 0 = full set (previous runs).")
     return parser.parse_args()
 
 args = parse_arguments()
@@ -419,6 +424,16 @@ benchmarking_indices, leftout_indices = train_test_split(
     stratify=all_labels,
     random_state=42
 )
+if args.bench_max_samples and len(benchmarking_indices) > args.bench_max_samples:
+    # Fixed stratified subset of the benchmarking set (same subset for every fold,
+    # seed and model of a run and across runs): a cheaper oracle, see --bench-max-samples.
+    benchmarking_indices, _ = train_test_split(
+        benchmarking_indices,
+        train_size=args.bench_max_samples,
+        stratify=np.asarray(all_labels)[benchmarking_indices],
+        random_state=43,
+    )
+    print(f"Benchmarking set subsampled to {len(benchmarking_indices)} samples (--bench-max-samples).")
 benchmarking_set = Subset(full_dataset, benchmarking_indices)
 benchmarking_loader = torch.utils.data.DataLoader(
     benchmarking_set, batch_size=512,
