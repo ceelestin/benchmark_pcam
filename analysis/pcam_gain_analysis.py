@@ -17,6 +17,9 @@ size (the outer chunks); the cumulative study-only statistics
 Definitions follow analysis/derivation_levers_analysis.py in benchmark_regression:
 G_K^paper = smallest test multiplier alpha whose pooled single-split error variance
 Var_seeds(delta_HO(alpha)) drops below Var_seeds(Delta_K), Delta_K = mean_k q_k - mean_k b_k;
+V1(alpha) is averaged exactly over the order of the hidden chunks (v1_alpha_curve, same as
+benchmark_regression's derivation_levers_analysis); pooling them in one fixed order, as before
+2026-09-26, adds noise shared by every configuration using the same chunks (kept as G_paper_fixed).
 G_K^err = Var(q_1-b_1)/Var(qbar_K-bbar_K). Losses: accuracy (higher better; error01 rho is the
 matched candidate), nll, brier (both lower-better: negated).
 
@@ -53,6 +56,21 @@ K_GRID = [2, 3, 5, 10, 20]
 
 def G_closed(f, K, t=T):
     return 1.0 / ((1 - f) * (t + (1 - t) / K) + f / K)
+
+
+def v1_alpha_curve(x0, X):
+    """V1(alpha), alpha = 1..n+1, averaged over the order of the n chunks: the pooled error
+    (x0 + sum_{j in S} x_j) / alpha, |S| = alpha - 1, has a variance across seeds that is a quadratic
+    form, so its expectation over a uniformly random S is [C00 + 2 m c0 + m d + m (m-1) o] / alpha^2
+    (m = alpha - 1; C = cov of [x0, X] with ddof=1; c0 mean C0j, d mean Cjj, o mean Cjl, j != l)."""
+    Z = np.column_stack([x0, X])
+    C = np.cov(Z, rowvar=False, ddof=1)
+    n = X.shape[1]
+    Cc = C[1:, 1:]
+    d = np.trace(Cc) / n
+    o = (Cc.sum() - np.trace(Cc)) / (n * (n - 1)) if n > 1 else 0.0
+    m = np.arange(0, n + 1, dtype=float)
+    return (C[0, 0] + 2 * m * C[0, 1:].mean() + m * d + m * (m - 1) * o) / (m + 1) ** 2
 
 
 def paper_gain(var_k, alpha_var):
@@ -94,20 +112,23 @@ def analyse(df, loss):
         n_alpha = outer.shape[1] + 1
         cum = np.cumsum(outer, axis=1)
         pooled = np.concatenate([Q[:, :1], (Q[:, :1] + cum) / (np.arange(1, n_alpha)[None, :] + 1)], axis=1)
-        delta_alpha_var = np.var(pooled - B[:, :1], axis=0, ddof=1)
+        delta_alpha_var_fixed = np.var(pooled - B[:, :1], axis=0, ddof=1)   # one fixed chunk order
+        Xc = outer - B[:, :1]
+        delta_alpha_var = v1_alpha_curve(E[:, 0], Xc)                      # order-averaged
         v1_err = np.var(E[:, 0], ddof=1)
         rec = {"model": model, "train_size": int(size), "n_seeds": n_seeds, "n_alpha": n_alpha, "m_test": int(round(size * T / (1 - T)))}
         for K in [k for k in K_GRID if k <= K_avail]:
             me = E[:, :K].mean(axis=1)
             g_err = v1_err / np.var(me, ddof=1)
             g_paper, capped = paper_gain(np.var(me, ddof=1), delta_alpha_var)
+            g_paper_fixed, _ = paper_gain(np.var(me, ddof=1), delta_alpha_var_fixed)
             bs = []
             for _ in range(200):
                 idx = rng.integers(0, n_seeds, n_seeds)
-                bs.append(paper_gain(np.var(me[idx], ddof=1), np.var(pooled[idx] - B[idx, :1], axis=0, ddof=1))[0])
-            rows.append({**rec, "K": K, "G_paper": g_paper, "G_paper_capped": capped,
+                bs.append(paper_gain(np.var(me[idx], ddof=1), v1_alpha_curve(E[idx, 0], Xc[idx]))[0])
+            rows.append({**rec, "K": K, "G_paper": g_paper, "G_paper_capped": capped, "G_paper_fixed": g_paper_fixed,
                          "G_paper_lo": np.percentile(bs, 5), "G_paper_hi": np.percentile(bs, 95), "G_err": g_err})
-            rec[f"G_paper_{K}"], rec[f"G_err_{K}"] = g_paper, g_err
+            rec[f"G_paper_{K}"], rec[f"G_paper_fixed_{K}"], rec[f"G_err_{K}"] = g_paper, g_paper_fixed, g_err
         for k in (3, 5, 10, 20):
             sub = g[g["fold"] == k]
             for name, col in RHO_COLS.items():
