@@ -54,6 +54,8 @@ RHO_COLS = RHO_COLS_ALL
 K_GRID = [2, 3, 5, 10, 20]
 
 
+CI = 0.90  # percentile-interval level of the seed bootstrap (--ci); 0.90 until 2026-11-02, 0.95 for the paper since then
+
 def G_closed(f, K, t=T):
     return 1.0 / ((1 - f) * (t + (1 - t) / K) + f / K)
 
@@ -98,7 +100,7 @@ def load(pattern):
 def analyse(df, loss):
     qc, bc, hc, sign, _ = LOSS[loss]
     rows, cands = [], []
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(0)  # same draws whatever --ci
     for (model, size), g in df.groupby(["model", "study_size"]):
         piv_q = g.pivot_table(index="seed", columns="fold", values=qc).dropna(axis=0)
         piv_b = g.pivot_table(index="seed", columns="fold", values=bc).loc[piv_q.index]
@@ -127,7 +129,7 @@ def analyse(df, loss):
                 idx = rng.integers(0, n_seeds, n_seeds)
                 bs.append(paper_gain(np.var(me[idx], ddof=1), v1_alpha_curve(E[idx, 0], Xc[idx]))[0])
             rows.append({**rec, "K": K, "G_paper": g_paper, "G_paper_capped": capped, "G_paper_fixed": g_paper_fixed,
-                         "G_paper_lo": np.percentile(bs, 5), "G_paper_hi": np.percentile(bs, 95), "G_err": g_err})
+                         "G_paper_lo": np.percentile(bs, 50 - 50 * CI), "G_paper_hi": np.percentile(bs, 50 + 50 * CI), "G_err": g_err})
             rec[f"G_paper_{K}"], rec[f"G_paper_fixed_{K}"], rec[f"G_err_{K}"] = g_paper, g_paper_fixed, g_err
         for k in (3, 5, 10, 20):
             sub = g[g["fold"] == k]
@@ -168,8 +170,11 @@ def main():
     ap.add_argument("--glob", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--loss", default="accuracy", choices=list(LOSS))
+    ap.add_argument("--ci", type=float, default=0.90, help="level of the percentile bootstrap intervals (paper: 0.95)")
     ap.add_argument("--rho", default="all", choices=["all", "cum"], help="all: K=20 broadcast column (available on all 400 cells); cum: cumulative column (9 cells)")
     args = ap.parse_args()
+    global CI
+    CI = args.ci
     global RHO_COLS
     RHO_COLS = RHO_COLS_ALL if args.rho == "all" else RHO_COLS_CUM
     os.makedirs(args.out_dir, exist_ok=True)
