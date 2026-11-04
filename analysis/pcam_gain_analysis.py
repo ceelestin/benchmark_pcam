@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""PCam: exact variance-equivalent test sample gains and study-only redundancy candidates
-on the redundancy-calibration set (job 9433 + resubmit 18278: 4 models x 4 train sizes x
-25 seeds, K = 20 ShuffleSplit folds, test fraction 0.2).
+"""PCam: exact variance-equivalent test sample gains and study-only redundancy statistics, per network x n_tr.
 
-Usage (Jean-Zay login node, benchcv venv):
+Run sets: the redundancy runs of Table D.2 and Figure 6 of the paper (configs/redundancy_round3_50seeds_3sizes.txt:
+4 networks x n_tr 100/300/800 x seeds 100-149, K = 20 ShuffleSplit splits, test fraction 0.2), read with
+--rho cum; the script was first written for the redundancy-calibration runs
+(configs/legacy/redundancy_calibration_*.txt), whose files mostly lack the cumulative columns (default --rho all).
+
+Usage (module pytorch-gpu/py3/2.8.0, or the packages of requirements.txt), from the repository root:
     python analysis/pcam_gain_analysis.py \
-        --glob "$WORK/benchmark_pcam/results_output_pcam/pcam_results_CV_shuffle_split_unstrat_*_nsplits_20_seeds_*_sizes_*_2026092[12]_*.parquet" \
-        --out-dir analysis/out_calibration --loss accuracy
+        --glob "results_output_pcam/pcam_results_CV_shuffle_split_unstrat_*_nsplits_20_seeds_1[0-4][0-9]-*_sizes_*.parquet" \
+        --out-dir analysis/out_round3 --loss accuracy --rho cum      # also --loss nll, --loss brier; --ci 0.95
 
 Columns used (pcam_deep_training_adapted.py): per fold ``test_<loss>`` (fold score q_k) and
 ``benchmark_<loss>`` (the same model on the benchmarking set, b_k); on fold 1 the list
@@ -25,7 +28,7 @@ matched candidate), nll, brier (both lower-better: negated).
 
 PRE-REGISTERED RULE (see benchmark_regression/analysis/PREREGISTRATION_f_rule.md): read at
 fold k=3, f_hat = 1 - rho_cum(k) of the matched loss, predicted G_K = 1/[(1-f)(t+(1-t)/K)+f/K];
-'stop' iff predicted G_20 < 10 (<=> rho_cum(3) > 0.2593). Checks: P(G_20 >= 10 | stop) <= 0.05
+'stop' iff predicted G_20 < 10 (<=> rho_cum(3) > 0.2631). Checks: P(G_20 >= 10 | stop) <= 0.05
 and the bound P(predicted G_20 >= observed G_20).
 """
 import argparse
@@ -41,11 +44,11 @@ LOSS = {  # loss -> (test col, bench col, hidden list col, sign (+1 higher-bette
     "nll": ("test_nll", "benchmark_nll", "hidden_test_nlls", -1, "study_nll_rho_cum_oof_intersection"),
     "brier": ("test_brier", "benchmark_brier", "hidden_test_briers", -1, "study_squared_error_rho_cum_oof_intersection"),
 }
-# DEVIATION FROM THE PRE-REGISTRATION (2026-09-23): the 391 job-9433 parquets predate the
-# cumulative columns and only carry the K=20 broadcast value `study_<loss>_rho_all_oof_intersection`
-# (the 9 resubmit parquets have both). The fold-k read of the rule is therefore only possible
-# at k = 20 on this set; the threshold (rho > 0.2631 <=> stop) is unchanged. `--rho cum` uses
-# the cumulative columns where they exist (9/400 cells) for reference.
+# DEVIATION FROM THE PRE-REGISTRATION (2026-09-23), on the redundancy-calibration runs: 391 of their
+# 400 parquets predate the cumulative columns and only carry the K=20 broadcast value
+# `study_<loss>_rho_all_oof_intersection` (the 9 re-submitted ones have both). The fold-k read of the
+# rule is therefore only possible at k = 20 on that set; the threshold (rho > 0.2631 <=> stop) is
+# unchanged. `--rho cum` uses the cumulative columns, which every round-3 parquet has.
 RHO_COLS_ALL = {"rho_err01": "study_error01_rho_all_oof_intersection", "rho_nll": "study_nll_rho_all_oof_intersection",
                 "rho_sq": "study_squared_error_rho_all_oof_intersection"}
 RHO_COLS_CUM = {"rho_err01": "study_error01_rho_cum_oof_intersection", "rho_nll": "study_nll_rho_cum_oof_intersection",
@@ -54,7 +57,7 @@ RHO_COLS = RHO_COLS_ALL
 K_GRID = [2, 3, 5, 10, 20]
 
 
-CI = 0.90  # percentile-interval level of the seed bootstrap (--ci); 0.90 until 2026-11-02, 0.95 for the paper since then
+CI = 0.90  # percentile-interval level of the seed bootstrap (--ci); the paper reports 95% intervals (--ci 0.95)
 
 def G_closed(f, K, t=T):
     return 1.0 / ((1 - f) * (t + (1 - t) / K) + f / K)
@@ -171,7 +174,7 @@ def main():
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--loss", default="accuracy", choices=list(LOSS))
     ap.add_argument("--ci", type=float, default=0.90, help="level of the percentile bootstrap intervals (paper: 0.95)")
-    ap.add_argument("--rho", default="all", choices=["all", "cum"], help="all: K=20 broadcast column (available on all 400 cells); cum: cumulative column (9 cells)")
+    ap.add_argument("--rho", default="all", choices=["all", "cum"], help="all: K=20 broadcast column; cum: cumulative column after k folds (round-3 runs; 9 of the 400 calibration cells)")
     args = ap.parse_args()
     global CI
     CI = args.ci

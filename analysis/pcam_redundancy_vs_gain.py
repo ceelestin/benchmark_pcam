@@ -8,9 +8,13 @@ correlation after k folds on the matched per-sample loss (0-1 error for accuracy
 the curve prediction K / (1 + (K - 1) omega) and the implied coupling kappa = rho_delta - omega,
 rho_delta = (K / G - 1) / (K - 1).
 
-Usage (Jean-Zay login node, benchcv venv):
+Run set: the redundancy runs of Table D.2 and Figure 6 of the paper (configs/redundancy_round3_50seeds_3sizes.txt).
+Writes <out-dir>/redundancy_vs_gain.csv; analysis/out_round3_redundancy/redundancy_vs_gain.csv, tracked in this
+repository, is its output on those runs and an input of Figure 6 (paper_style_scatter.py in benchmark_regression).
+
+Usage (module pytorch-gpu/py3/2.8.0, or the packages of requirements.txt), from the repository root:
     python analysis/pcam_redundancy_vs_gain.py \
-        --glob "$WORK/benchmark_pcam/results_output_pcam/pcam_results_CV_shuffle_split_unstrat_*_nsplits_20_seeds_1[0-4][0-9]-*_sizes_*.parquet" \
+        --glob "results_output_pcam/pcam_results_CV_shuffle_split_unstrat_*_nsplits_20_seeds_1[0-4][0-9]-*_sizes_*.parquet" \
         --out-dir analysis/out_round3_redundancy
 """
 import argparse

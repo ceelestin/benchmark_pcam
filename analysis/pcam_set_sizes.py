@@ -1,4 +1,4 @@
-"""Set sizes of PCam runs, read off their parquets (CE, 2026-11-02).
+"""Set sizes of PCam runs, read off their parquets.
 
 An accuracy measured on n images is a multiple of 1/n, so the smallest n that makes every recorded value of a column
 an integer count is the size of the set behind it: the test fold (`test_accuracy`), the validation subset
@@ -9,7 +9,7 @@ which convention a run followed:
   * later runs: the label is n_tr, the study set (column `study_pool_size`) has 1.25 x label observations and the
     test fold label / 4.
 
-Usage (Jean-Zay, module load pytorch-gpu/py3/2.8.0):
+Usage (module pytorch-gpu/py3/2.8.0, or the packages of requirements.txt):
     python analysis/pcam_set_sizes.py DIR_OR_GLOB [DIR_OR_GLOB ...]
 """
 import argparse
