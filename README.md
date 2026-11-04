@@ -23,8 +23,12 @@ call TIAToolbox.
 | `launch.sh` | SLURM array launcher: task *i* runs line *i* of a configuration file |
 | `analysis/pcam_gain_analysis.py` | variance-equivalent sample gains with bootstrap intervals, and the redundancy after *k* splits (Table D.2) |
 | `analysis/pcam_redundancy_vs_gain.py` | redundancy against sample gain per network, size and metric (Table D.2, Figure 6) |
-| `analysis/out_round3_redundancy/redundancy_vs_gain.csv` | output of the previous script on the runs of Table D.2; an input of Figure 6 |
 | `analysis/pcam_set_sizes.py` | reads the test-fold, validation and outer-chunk sizes off run outputs (checks which size convention a run used) |
+
+The analysis scripts write their tables to `analysis/out_<name>/`, which is not tracked. Figure 6 of the paper
+(benchmark_regression `analysis/paper_style/fig6_redundancy_vs_gain.py`) reads two of them from this checkout,
+`analysis/out_round3/candidates_{accuracy,nll,brier}.csv` and `analysis/out_round3_redundancy/redundancy_vs_gain.csv`:
+the usage lines of the two scripts regenerate them from the runs of Table D.2.
 
 ## What the script does
 
@@ -177,7 +181,7 @@ git checkout a2a9fd3
 python pcam_deep_training_adapted.py --no-cross-validation --seeds 0 1 --study-sizes 30 --model-choices densenet121 --epochs 30 --batch-size 64
 ```
 
-The run outputs are not part of this repository.
+Neither the run outputs nor the analysis outputs are part of this repository.
 
 ## License
 

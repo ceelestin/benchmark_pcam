@@ -14,9 +14,13 @@ logs/
 *.tgz
 *.tar.gz
 
-# Analysis outputs; the one tracked CSV (an input of Figure 6 of the paper) stays tracked
+# Analysis outputs (the analysis scripts regenerate them from the runs) and other result files
 analysis/out_*/
-!analysis/out_round3_redundancy/
+*.csv
+*.pdf
+*.png
+*.log
+*.ipynb
 
 # Python
 __pycache__/

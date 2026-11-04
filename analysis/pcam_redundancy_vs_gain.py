@@ -9,8 +9,9 @@ the curve prediction K / (1 + (K - 1) omega) and the implied coupling kappa = rh
 rho_delta = (K / G - 1) / (K - 1).
 
 Run set: the redundancy runs of Table D.2 and Figure 6 of the paper (configs/redundancy_round3_50seeds_3sizes.txt).
-Writes <out-dir>/redundancy_vs_gain.csv; analysis/out_round3_redundancy/redundancy_vs_gain.csv, tracked in this
-repository, is its output on those runs and an input of Figure 6 (paper_style_scatter.py in benchmark_regression).
+Writes <out-dir>/redundancy_vs_gain.csv (not tracked). Figure 6 (benchmark_regression
+analysis/paper_style/fig6_redundancy_vs_gain.py) reads it from analysis/out_round3_redundancy/, where the usage
+below writes it, with the analysis/out_round3/candidates_<loss>.csv tables of pcam_gain_analysis.py.
 
 Usage (module pytorch-gpu/py3/2.8.0, or the packages of requirements.txt), from the repository root:
     python analysis/pcam_redundancy_vs_gain.py \
