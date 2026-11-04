@@ -1,0 +1,1 @@
+Earlier and exploratory run sets (2025 protocol, pilots, smoke tests, the redundancy-calibration runs) that feed no result of the paper; files written before commit e194b00 (2026-08-01) give study-set sizes in `--train-sizes`, later ones n_tr, and each ran with the script of its own date (see `git log -- <file>`).
