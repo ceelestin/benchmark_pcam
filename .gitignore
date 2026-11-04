@@ -1,0 +1,33 @@
+# Data: the PatchCamelyon Hugging Face cache (about 7 GB) and the model caches
+pcam_data/
+pcamdata/
+hf_cache/
+torch_cache/
+
+# Run outputs and logs
+results_output_pcam/
+results_*/
+slurm_output/
+logs/
+*.parquet
+*.zip
+*.tgz
+*.tar.gz
+
+# Analysis outputs; the one tracked CSV (an input of Figure 6 of the paper) stays tracked
+analysis/out_*/
+!analysis/out_round3_redundancy/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Core dumps
+core
+core.[0-9]*
+core-*
+
+# Local notes and scratch
+STATUS.md
+old/
