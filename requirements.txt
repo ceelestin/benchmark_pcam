@@ -1,7 +1,12 @@
-datasets
-numpy
-pandas
-pillow
-scikit-learn
-torch
-torchvision
+# Versions of the Jean-Zay module pytorch-gpu/py3/2.8.0 (Python 3.12.11), loaded by every PCam run of the
+# paper from 2026-03-29 on and used for the analysis scripts. torch and torchvision must match your CUDA:
+# see https://pytorch.org/get-started/previous-versions/ for the wheels of torch 2.8.0.
+torch==2.8.0
+torchvision==0.23.0
+datasets==4.0.0
+numpy==2.2.6
+pandas==2.3.1
+pyarrow==21.0.0
+pillow==11.3.0
+scikit-learn==1.7.1
+scipy==1.16.1
