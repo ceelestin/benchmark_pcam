@@ -1,9 +1,26 @@
 # %% [markdown]
-# # PCam Training Script (Hugging Face version)
-# This script loads the PatchCamelyon dataset from Hugging Face,
-# prepares it for PyTorch, and trains CNN backbones.
-# It supports standard cross-validation or a specific 'no-cross-validation' mode
-# with extensive hidden set testing.
+# # PatchCamelyon training loop of "Crossing the Validation Crisis" (Eve, Varoquaux and Moreau, 2026)
+#
+# Adapted from a training script shared by the TIAToolbox authors (Pocock et al., 2022,
+# https://github.com/TissueImageAnalytics/tiatoolbox). This script does not call TIAToolbox itself.
+#
+# Protocol (Appendix F.3 of the paper):
+# * the official training and validation splits of PCam (Hugging Face dataset 1aurent/PatchCamelyon,
+#   294,912 images) are merged; a fixed stratified split (random_state 42) keeps 244,912 images as the
+#   benchmarking set and leaves a pool of 50,000;
+# * for each seed, a stratified study set of round(n_tr / (1 - 1/5)) images is drawn from the pool
+#   (--train-sizes gives n_tr, the training and validation subsets together); the rest of the pool is the
+#   outer set;
+# * each of the K splits of the study set (ShuffleSplit, or repeated 5-fold with --cv-method repeated_kfold;
+#   test fraction 1/5, optionally stratified with --stratify) trains an ImageNet-pretrained torchvision
+#   network on three fifths of the study set with Adam, keeps the epoch with the best accuracy on the
+#   validation fifth, and scores that model on the validation subset, the test fold and the benchmarking set
+#   (accuracy, negative log-likelihood, Brier score);
+# * the model of the first split also scores the outer set, in chunks of the test-fold size (at most 200);
+#   with --no-cross-validation every split does;
+# * the study-only redundancy statistics (Appendix D.2) are computed from the per-sample test losses.
+# Each run writes one Parquet file to results_output_pcam/. See README.md for the data preparation and the
+# configuration files of the paper's runs.
 
 # %%
 import argparse
@@ -68,7 +85,7 @@ def parse_arguments():
                         help="If > 0, evaluate on a fixed stratified random subset of at most this many "
                              "benchmarking-set samples (random_state 43) instead of the full ~240k set. The "
                              "oracle score keeps a negligible sampling error (Var ~ 0.25/N) while ViT-B/16 "
-                             "evaluation time per fold drops proportionally. 0 = full set (previous runs).")
+                             "evaluation time per fold drops proportionally. 0 (default) = full set.")
     return parser.parse_args()
 
 args = parse_arguments()
@@ -108,9 +125,16 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-# Load dataset from Hugging Face
+# Load PCam. ./pcam_data is a Hugging Face cache of the dataset HF_NAME (about 7 GB of Arrow files), read as a
+# local folder (its "valid" split then comes out as "validation"). On a fresh clone it is first downloaded into
+# ./pcam_data, at the revision used for the paper's runs, and then read in the same way. Compute nodes often have
+# no internet access: run the download once from a node that has it (README.md, "Data").
 HF_NAME = "1aurent/PatchCamelyon"
+HF_REVISION = "e4bd149e7a868a9d811fdd9f9a9fb78c05c104ab"
 data_dir = "./pcam_data/"
+if not any(Path(data_dir).rglob("*.arrow")):
+    print(f"No PCam cache in {data_dir}: downloading {HF_NAME} (revision {HF_REVISION[:7]}) into it.")
+    load_dataset(HF_NAME, revision=HF_REVISION, cache_dir=data_dir)
 hf = load_dataset(data_dir)
 
 class HuggingFacePCam(Dataset):
@@ -311,7 +335,7 @@ def evaluate_model(model, dataloader, criterion, device, set_name,
 
     print(f"Accuracy on {set_name}: {acc:.4f}, NLL: {nll:.4f}, "
           f"Brier: {brier:.4f}, Time: {eval_time:.2f}s")
-    # `loss` retains its original meaning (mean cross-entropy) for backward compat.
+    # `loss` is the mean cross-entropy, i.e. the NLL, kept under its first name for the earlier runs' columns.
     result = {"accuracy": acc, "loss": nll, "nll": nll, "brier": brier, "runtime": eval_time}
     if return_per_sample:
         # Per-sample loss for each metric, aligned with the dataloader order (which,
@@ -331,7 +355,7 @@ def evaluate_model(model, dataloader, criterion, device, set_name,
 def _pairwise_oof_icc(loss_by_fold, ids_by_fold):
     """Study-only OOF-intersection ICC of a per-sample loss across CV folds.
 
-    Mirrors the regression objective's ``_oof_intersection_icc``: for every pair
+    Mirrors ``_oof_intersection_icc`` of objective.py in benchmark_regression: for every pair
     of folds, restrict to the study points both folds held out (the intersection
     of their test-index sets), take cov / mean-var of the per-sample loss on those
     shared points, and average over pairs. rho = mean(cov) / mean(var). Pairs that
@@ -368,7 +392,7 @@ def _pairwise_oof_icc(loss_by_fold, ids_by_fold):
 def _oof_anova(loss_by_fold, ids_by_fold):
     """Per-sample OOF variance decomposition of a per-sample loss across folds.
 
-    Mirrors the regression objective's ``_oof_anova_summary``: every study point
+    Mirrors ``_oof_anova_summary`` of objective.py in benchmark_regression: every study point
     is observed out-of-fold on the folds where it is in the test part (an
     unbalanced one-way layout). Over the points seen at least twice:
     fold_var = mean per-sample unbiased variance across folds (training-driven
@@ -417,7 +441,7 @@ else:
     np.savez("./pcam_data/all_labels.npz", labels=all_labels)
 print(f"Total labels extracted: {len(all_labels)}")
 
-# Split full dataset into a large training pool and a smaller pool for study sets
+# Split the full dataset into the benchmarking set and the pool of the study sets (the same for every seed)
 benchmarking_indices, leftout_indices = train_test_split(
     np.arange(len(full_dataset)),
     test_size=50000,
@@ -546,7 +570,7 @@ for seed in seeds:
                     fold_nll.append(test_per_sample["nll"])
                     fold_err01.append(test_per_sample["err01"])
 
-                    # --- Hidden Test Set Evaluation (if CV is False) ---
+                    # --- Outer set ('hidden' chunks): first split with CV, every split without ---
                     hidden_test_accuracies = []
                     hidden_test_losses = []
                     hidden_test_nlls = []
@@ -608,6 +632,8 @@ for seed in seeds:
                         # `study_size` records the CLI train(+val) size so every
                         # downstream size label is the chosen train size; the
                         # larger actual study pool is kept in `study_pool_size`.
+                        # (Runs before commit e194b00 recorded the study-set size
+                        # here and had no `study_pool_size`.)
                         "model": backbone, "study_size": train_size,
                         "study_pool_size": study_size,
                         "n_splits": n_splits, "seed": seed, "fold": fold + 1,
