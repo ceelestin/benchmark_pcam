@@ -2,7 +2,7 @@
 # SLURM array launcher: array task i runs pcam_deep_training_adapted.py with the arguments on line i of $CONFIG.
 # Submit from the repository root (every path is relative to it), for example
 #   mkdir -p slurm_output
-#   sbatch --array=1-750 --export=ALL,CONFIG=configs/rebuttal_shufflesplit.txt launch.sh
+#   sbatch --array=1-750 --export=ALL,CONFIG=configs/mccv_cnns.txt launch.sh
 # The array size is the number of lines of the file (wc -l counts one less when the last line has no newline).
 # Written for the V100 partition of Jean-Zay (IDRIS): set your account below, and adapt the #SBATCH lines and the
 # module line to your cluster.
@@ -17,7 +17,7 @@
 #SBATCH --error=slurm_output/pcam_%A_%a.out
 
 if [ -z "${CONFIG}" ]; then
-    echo "Set CONFIG to a configuration file, e.g. sbatch --export=ALL,CONFIG=configs/rebuttal_shufflesplit.txt ..." >&2
+    echo "Set CONFIG to a configuration file, e.g. sbatch --export=ALL,CONFIG=configs/mccv_cnns.txt ..." >&2
     exit 1
 fi
 

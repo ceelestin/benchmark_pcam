@@ -103,7 +103,7 @@ python pcam_deep_training_adapted.py --n-splits 20 --cv-method shuffle_split --s
     --train-sizes 400 --model-choices mobilenet_v2 --epochs 30 --batch-size 64
 ```
 
-This is one line of `configs/rebuttal_shufflesplit.txt`: MobileNetV2, seed 0, n_tr = 400 (a study set of 500
+This is one line of `configs/mccv_cnns.txt`: MobileNetV2, seed 0, n_tr = 400 (a study set of 500
 images, test folds of 100), K = 20 splits. It writes
 `results_output_pcam/pcam_results_CV_shuffle_split_unstrat_mobilenet_v2_nsplits_20_seeds_0-0_sizes_400_<date>_<time>.parquet`.
 For a quick test, use `--n-splits 4 --epochs 1 --train-sizes 80 --bench-max-samples 60000`.
@@ -132,7 +132,7 @@ Each line of a file of `configs/` holds the arguments of one job, usually one se
 
 ```bash
 mkdir -p slurm_output                       # SLURM writes the logs there and does not create it
-sbatch --array=1-750 --export=ALL,CONFIG=configs/rebuttal_shufflesplit.txt launch.sh
+sbatch --array=1-750 --export=ALL,CONFIG=configs/mccv_cnns.txt launch.sh
 ```
 
 The array size is the number of lines (`grep -c . FILE`). Before submitting, set `#SBATCH --account=<project>@v100`
@@ -148,8 +148,8 @@ V ViT-B/16. Every run uses 30 epochs and batches of 64.
 
 | Paper | Configuration file (lines) | Networks | n_tr (study set) | Seeds | Splits | Script that ran it |
 |---|---|---|---|---|---|---|
-| Figures 2 (M, n_tr = 400), 5 (middle) and D.1; Tables E.2 and N.1; the K = 20 column of Table M.1; Table F.2 | `rebuttal_shufflesplit.txt` (750), `rebuttal_vit.txt` (250) | D, M, W; V | 24, 80, 240, 400, 640 (30-800) | 0-49 | 20, ShuffleSplit | `0d97538` and `ccdbba8`, 2026-03-29 (`ccdbba8` adds ViT-B/16 and leaves the CNN code unchanged) |
-| Figure I.1 and Table E.5 (n_tr = 240), against the ShuffleSplit runs above | `rebuttal_repeatedkfold.txt` (750) | D, M, W | 24-640 (30-800) | 0-49 | 20 = 4 x 5-fold | `0d97538`, 2026-03-29 |
+| Figures 2 (M, n_tr = 400), 5 (middle) and D.1; Tables E.2 and N.1; the K = 20 column of Table M.1; Table F.2 | `mccv_cnns.txt` (750), `mccv_vit.txt` (250) | D, M, W; V | 24, 80, 240, 400, 640 (30-800) | 0-49 | 20, ShuffleSplit | `0d97538` and `ccdbba8`, 2026-03-29 (`ccdbba8` adds ViT-B/16 and leaves the CNN code unchanged) |
+| Figure I.1 and Table E.5 (n_tr = 240), against the ShuffleSplit runs above | `repeated_kfold_cnns.txt` (750) | D, M, W | 24-640 (30-800) | 0-49 | 20 = 4 x 5-fold | `0d97538`, 2026-03-29 |
 | Table J.1, Figures J.1 and K.1, Tables E.6 and E.7 | unstratified: the lines without `--stratify` of `stratification_and_newmetrics_full.txt` and `stratification_and_newmetrics_full_newseeds.txt` (200 + 200); stratified: `stratificationONLY_and_newmetrics_full.txt` (400) | D, M, W, V | 400 (500) | 0-99 | 20, ShuffleSplit | `92f131c` (unstratified, 2026-07-25), `f50dff6` (stratified, 2026-07-26) |
 | Appendix L (PCam at n_tr = 24); Table F.2 | `redundancy_smalldata.txt`: its 200 lines of n_tr = 24 (the 200 lines of n_tr = 40 feed no result) | D, M, W, V | 24 (30) | 0-49 | 20, ShuffleSplit | `6f7f568`, 2026-07-31 |
 | Table D.2; Figure 6 (PCam points); Table F.2 | `redundancy_round3_50seeds_3sizes.txt` (600), oracle on a fixed subset of 60,000 benchmarking images | D, M, W, V | 100, 300, 800 (125, 375, 1,000) | 100-149 | 20, ShuffleSplit | `11148cb`, 2026-09-24 |
